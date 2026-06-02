@@ -16,7 +16,7 @@ pipeline {
         stage('1. Fetch Code') {
             steps {
                 echo 'Fetching Code from Your GitHub Repo...'
-                git branch: 'main', url: 'https://github.com/ziadibrahim509/simple-java-app''
+                git branch: 'main', url: 'https://github.com/ziadibrahim509/simple-java-app'
             }
         }
 
