@@ -4,51 +4,66 @@ pipeline {
     tools {
         maven 'M3916'
     }
+    
+    environment {
+        DOCKER_REGISTRY_USER = 'ziadibrahim123' 
+        IMAGE_NAME           = 'simple-java-app'
+        IMAGE_TAG            = "${BUILD_NUMBER}"
+        DOCKER_HOST          = 'tcp://172.17.0.1:2375'
+    }
 
     stages {
         stage('1. Fetch Code') {
             steps {
-                echo 'Fetching Code from GitHub...'
-                git branch: 'main', url: 'https://github.com/ziadibrahim509/simple-java-app'
+                echo 'Fetching Code from Your GitHub Repo...'
+                git branch: 'main', url: 'https://github.com/ziadibrahim509/simple-java-app''
             }
         }
 
-       stage('2. Build') {
+        stage('2. Build') {
             steps {
                 echo 'Building Java Application using Maven...'
-                withMaven(maven: 'M3916') {
-                    sh 'mvn clean compile'
-                }
+                sh 'mvn clean package -DskipTests'
             }
         }
 
         stage('3. Test') {
             steps {
                 echo 'Running Unit Tests...'
-                withMaven(maven: 'M3916') {
-                    sh 'mvn test package'
-                }
+                sh 'mvn test'
             }
         }
 
         stage('4. Push (Docker Image)') {
             steps {
-                echo 'Building Docker Image and Pushing...'
-
-                sh 'docker build -t haythammohamd/simple-java-app:latest .'
-
+                echo 'Building Docker Image and Pushing to Docker Hub...'
+                sh "docker build -t ziadibrahim123/simple-java-app:\${BUILD_NUMBER} ."
+                sh "docker tag ziadibrahim123/simple-java-app:\${BUILD_NUMBER} ziadibrahim123/simple-java-app:latest"
+                
+                sh "docker login -u ziadibrahim123 -p dckr_pat_ByTlVMkxJltKyu4KxJlZ5LFXXSo"
+                
+                sh "docker push ziadibrahim123/simple-java-app:\${BUILD_NUMBER}"
+                sh "docker push ziadibrahim123/simple-java-app:latest"
             }
         }
 
         stage('5. Deploy') {
             steps {
                 echo 'Deploying Application to Production...'
-                sh 'docker stop my-running-app || true'
-                sh 'docker rm my-running-app || true'
-
-                sh 'docker run -d --name my-running-app -p 8081:8080 haythammohamd/simple-java-app:latest'
+                sh '''
+                docker stop simple-java-app-running || true
+                docker rm simple-java-app-running || true
+                docker run -d -p 8081:8080 --name simple-java-app-running ziadibrahim123/simple-java-app:latest
+                '''
                 echo 'Application is live on port 8081!'
             }
+        }
+    }
+
+    post {
+        always {
+            echo 'Cleaning up docker login session...'
+            sh 'docker logout || true'
         }
     }
 }
