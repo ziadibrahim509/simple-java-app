@@ -9,21 +9,25 @@ pipeline {
         stage('1. Fetch Code') {
             steps {
                 echo 'Fetching Code from GitHub...'
-                git branch: 'main', url: 'https://github.com/HaythamMohamd/simple-java-app.git'
+                git branch: 'main', url: 'https://github.com/ziadibrahim509/simple-java-app'
             }
         }
 
-        stage('2. Build') {
+       stage('2. Build') {
             steps {
                 echo 'Building Java Application using Maven...'
-                sh 'mvn clean compile'
+                withMaven(maven: 'M3') {
+                    sh 'mvn clean compile'
+                }
             }
         }
 
         stage('3. Test') {
             steps {
                 echo 'Running Unit Tests...'
-                sh 'mvn test package'
+                withMaven(maven: 'M3') {
+                    sh 'mvn test package'
+                }
             }
         }
 
