@@ -16,7 +16,7 @@ pipeline {
        stage('2. Build') {
             steps {
                 echo 'Building Java Application using Maven...'
-                withMaven(maven: 'M3') {
+                withMaven(maven: 'M3916') {
                     sh 'mvn clean compile'
                 }
             }
@@ -25,7 +25,7 @@ pipeline {
         stage('3. Test') {
             steps {
                 echo 'Running Unit Tests...'
-                withMaven(maven: 'M3') {
+                withMaven(maven: 'M3916') {
                     sh 'mvn test package'
                 }
             }
