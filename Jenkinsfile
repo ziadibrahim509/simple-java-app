@@ -9,7 +9,6 @@ pipeline {
         DOCKER_REGISTRY_USER = 'ziadibrahim123' 
         IMAGE_NAME           = 'simple-java-app'
         IMAGE_TAG            = "${BUILD_NUMBER}"
-        DOCKER_HOST          = 'tcp://172.17.0.1:2375'
     }
 
     stages {
